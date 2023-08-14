@@ -1,0 +1,79 @@
+version: '3'
+services:
+  ### POSTGIS #######################################
+  postgis:
+    container_name: "postgis"
+    image: "postgis/postgis:latest"
+    environment:
+      POSTGRES_DB: "geoserver"
+      POSTGRES_USER: "geoserver"
+      POSTGRES_PASSWORD: "geoserver"
+    volumes:
+      - "./postgis/settings/CreateDB.sql:/docker-entrypoint-initdb.d/CreateDB.sql"
+    ports:
+      - "5432:5432"
+  ### GEOSERVER #####################################
+  geoserver:
+    depends_on:
+      - "postgis"
+    container_name: "geoserver"
+    # image: "docker.osgeo.org/geoserver:2.23.1"
+    build:
+      context: "./geoserver"
+      dockerfile: "Dockerfile"
+    # volumes:
+    #   - "./settings/workspace-setup.sh:/opt/workspace-setup.sh"
+    environment:
+      SKIP_DEMO_DATA: "true"
+      ROOT_WEBAPP_REDIRECT: "true"
+      INSTALL_EXTENSIONS: "true"
+      STABLE_EXTENSIONS: "importer"
+      CORS_ENABLED: "true"
+    ports:
+      - "8080:8080"
+  ### GEOAPI ########################################
+  geoapi:
+    depends_on: 
+      - "geoserver"
+      - "postgis"
+      - "celery"
+      - "redis"
+    container_name: "geoapi"
+    build:
+      context: "./geoapi"
+      dockerfile: "Dockerfile"
+    ports:
+      - "5000:5000"
+    volumes:
+      - "./geoapi/settings/settings.toml:/geoapi/etc/settings.toml"
+      - "./geoapi/settings/startup.sh:/geoapi/startup.sh"
+      - "/tmp:/tmp-docker"
+  ### CELERY ########################################
+  celery:
+    depends_on:
+      - "redis"
+    container_name: "celery"
+    build:
+      context: "./celery"
+      dockerfile: "Dockerfile"
+    volumes:
+      - "./celery/settings/settings.toml:/celery/etc/settings.toml"
+      - "./celery/settings/startup.sh:/celery/startup.sh"
+      - "/tmp:/tmp-docker"
+  ### REDIS #########################################
+  redis:
+    container_name: "redis"
+    image: "redis:latest"
+    ports:
+      - "6379:6379" # Redis port
+  ### ARGENAMP ######################################
+  # argenmap:
+  #   container_name: "argenmap"
+  #   build:
+  #     context: "./argenmap"
+  #     dockerfile: "Dockerfile"
+  #   volumes:
+  #     - ""
+  #   ports:
+  #     - "80:80"
+  #     - "443:443"

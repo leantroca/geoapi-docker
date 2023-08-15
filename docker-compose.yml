@@ -11,7 +11,7 @@ services:
     volumes:
       - "./postgis/settings/CreateDB.sql:/docker-entrypoint-initdb.d/CreateDB.sql"
     ports:
-      - "5432:5432"
+      - "5433:5432"
   ### GEOSERVER #####################################
   geoserver:
     depends_on:
@@ -30,7 +30,7 @@ services:
       STABLE_EXTENSIONS: "importer"
       CORS_ENABLED: "true"
     ports:
-      - "8080:8080"
+      - "8081:8080"
   ### GEOAPI ########################################
   geoapi:
     depends_on: 
@@ -43,11 +43,10 @@ services:
       context: "./geoapi"
       dockerfile: "Dockerfile"
     ports:
-      - "5000:5000"
+      - "5001:5000"
     volumes:
       - "./geoapi/settings/settings.toml:/geoapi/etc/settings.toml"
-      - "./geoapi/settings/startup.sh:/geoapi/startup.sh"
-      - "/tmp:/tmp-docker"
+      - "/tmp/geoapi:/tmp"
   ### CELERY ########################################
   celery:
     depends_on:
@@ -58,14 +57,13 @@ services:
       dockerfile: "Dockerfile"
     volumes:
       - "./celery/settings/settings.toml:/celery/etc/settings.toml"
-      - "./celery/settings/startup.sh:/celery/startup.sh"
-      - "/tmp:/tmp-docker"
+      - "/tmp/geoapi:/tmp"
   ### REDIS #########################################
   redis:
     container_name: "redis"
     image: "redis:latest"
     ports:
-      - "6379:6379" # Redis port
+      - "6380:6379" # Redis port
   ### ARGENAMP ######################################
   # argenmap:
   #   container_name: "argenmap"

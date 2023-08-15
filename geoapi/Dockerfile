@@ -20,6 +20,9 @@ RUN poetry install
 # Expose the API port
 EXPOSE 5000
 
+COPY ./settings/startup.sh /geoapi/startup.sh
+RUN chmod +x /geoapi/startup.sh
+
 # Start the API
-ENTRYPOINT ["/geoapi/startup.sh"]
+CMD ["/geoapi/startup.sh"]
 

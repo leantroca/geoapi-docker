@@ -17,4 +17,7 @@ ENV PATH="/root/.local/share/pypoetry/venv/bin:$PATH"
 # Install API dependencies using Poetry
 RUN poetry install
 
-ENTRYPOINT ["/celery/startup.sh"]
+COPY ./settings/startup.sh /celery/startup.sh
+RUN chmod +x /celery/startup.sh
+
+CMD ["/celery/startup.sh"]

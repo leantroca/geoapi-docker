@@ -11,7 +11,7 @@ ENV STABLE_EXTENSIONS="importer"
 ENV CORS_ENABLED="true"
 
 COPY ./settings/workspace-setup.sh /geoserver/workspace-setup.sh
-# RUN sh startup.sh &
-RUN sh workspace-setup.sh
+RUN chmod +x /geoserver/workspace-setup.sh
+RUN sh /geoserver/workspace-setup.sh
 
-CMD ["sh", "startup.sh"]
+CMD ["startup.sh"]

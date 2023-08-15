@@ -30,4 +30,4 @@ POSTGIS_TIMEZONE = "UTC"
 
 # CELERY Settings
 CELERY_BROKER = "redis://redis:6379/0"
-TEMP_BASE = "/tmp-docker"
+TEMP_BASE = "/tmp"

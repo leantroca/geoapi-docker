@@ -1,5 +1,11 @@
 version: '3'
 services:
+  ### POETRY ########################################
+  poetry-env:
+    container_name: "poetry-env"
+    build:
+      context: "./poetry-env"
+      dockerfile: "Dockerfile"
   ### POSTGIS #######################################
   postgis:
     container_name: "postgis"
@@ -38,6 +44,7 @@ services:
       - "postgis"
       - "celery"
       - "redis"
+      - "poetry-env"
     container_name: "geoapi"
     build:
       context: "./geoapi"
@@ -45,18 +52,21 @@ services:
     ports:
       - "5001:5000"
     volumes:
-      - "./geoapi/settings/settings.toml:/geoapi/etc/settings.toml"
+      # - "/home/bridge/Documents/MINISTERIO/DEV/geoapi:/src"
+      - "./geoapi/settings/settings.toml:/src/etc/settings.toml"
       - "/tmp/geoapi:/tmp"
   ### CELERY ########################################
   celery:
     depends_on:
       - "redis"
+      - "poetry-env"
     container_name: "celery"
     build:
       context: "./celery"
       dockerfile: "Dockerfile"
     volumes:
-      - "./celery/settings/settings.toml:/celery/etc/settings.toml"
+      # - "/home/bridge/Documents/MINISTERIO/DEV/geoapi:/src"
+      - "./celery/settings/settings.toml:/src/etc/settings.toml"
       - "/tmp/geoapi:/tmp"
   ### REDIS #########################################
   redis:

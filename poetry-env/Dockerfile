@@ -8,7 +8,7 @@ WORKDIR /src
 RUN apt-get update && apt-get install -y git
 
 # Clone the GitHub repository
-RUN git clone -b feature/v1.1.0/include-styles https://github.com/leantroca/geoapi .
+RUN git clone --depth 1 --branch v1.0.0 https://github.com/leantroca/geoapi .
 
 # Install Poetry
 RUN curl -sSL https://install.python-poetry.org | python -
